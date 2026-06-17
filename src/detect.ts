@@ -226,20 +226,36 @@ function detectNode(root: string, facts: RepoFacts): void {
 }
 
 function detectFrameworks(deps: Record<string, unknown>, facts: RepoFacts): void {
+  // Order matters: more specific meta-frameworks come before the libraries they
+  // build on (e.g. Next.js before React) so the most informative label leads.
   const known: Array<[string, string]> = [
     ['next', 'Next.js'],
+    ['@remix-run/react', 'Remix'],
+    ['@remix-run/node', 'Remix'],
+    ['@sveltejs/kit', 'SvelteKit'],
+    ['nuxt', 'Nuxt'],
+    ['gatsby', 'Gatsby'],
+    ['astro', 'Astro'],
     ['react', 'React'],
     ['vue', 'Vue'],
     ['svelte', 'Svelte'],
+    ['solid-js', 'SolidJS'],
     ['@angular/core', 'Angular'],
     ['express', 'Express'],
     ['fastify', 'Fastify'],
     ['@nestjs/core', 'NestJS'],
+    ['koa', 'Koa'],
+    ['@hapi/hapi', 'hapi'],
     ['vite', 'Vite'],
+    ['webpack', 'webpack'],
+    ['esbuild', 'esbuild'],
+    ['electron', 'Electron'],
+    ['react-native', 'React Native'],
     ['vitest', 'Vitest'],
     ['jest', 'Jest'],
-    ['electron', 'Electron'],
-    ['astro', 'Astro'],
+    ['mocha', 'Mocha'],
+    ['@playwright/test', 'Playwright'],
+    ['playwright', 'Playwright'],
   ];
   for (const [dep, label] of known) {
     if (dep in deps && !facts.frameworks.includes(label)) {
@@ -339,6 +355,136 @@ function detectRust(root: string, facts: RepoFacts): void {
   pushCommand(facts.commands, seen, { label: 'Format', command: 'cargo fmt', source: 'rustfmt' });
 }
 
+/** Detect JVM facts (Java / Kotlin via Maven or Gradle). Mutates `facts`. */
+function detectJvm(root: string, facts: RepoFacts): void {
+  const hasMaven = existsSync(join(root, 'pom.xml'));
+  const hasGradle =
+    existsSync(join(root, 'build.gradle')) || existsSync(join(root, 'build.gradle.kts'));
+  if (!hasMaven && !hasGradle) return;
+
+  // Kotlin DSL or a Kotlin source dir is an unambiguous Kotlin signal.
+  const kotlinDsl = existsSync(join(root, 'build.gradle.kts'));
+  if (kotlinDsl || isDir(join(root, join('src', 'main', 'kotlin')))) {
+    facts.languages.push('Kotlin');
+  }
+  facts.languages.push('Java');
+
+  const seen = new Set(facts.commands.map((c) => c.command));
+  if (hasMaven) {
+    if (!facts.name) {
+      const pom = readText(join(root, 'pom.xml'));
+      const artifact = pom?.match(/<artifactId>([^<]+)<\/artifactId>/);
+      if (artifact && artifact[1]) facts.name = artifact[1].trim();
+    }
+    facts.frameworks.push('Maven');
+    pushCommand(facts.commands, seen, {
+      label: 'Build',
+      command: 'mvn package',
+      source: 'pom.xml',
+    });
+    pushCommand(facts.commands, seen, { label: 'Test', command: 'mvn test', source: 'pom.xml' });
+  } else {
+    // Prefer the wrapper when present; it pins the Gradle version.
+    const wrapper = existsSync(join(root, 'gradlew'));
+    const gradle = wrapper ? './gradlew' : 'gradle';
+    facts.frameworks.push('Gradle');
+    pushCommand(facts.commands, seen, {
+      label: 'Build',
+      command: `${gradle} build`,
+      source: 'build.gradle',
+    });
+    pushCommand(facts.commands, seen, {
+      label: 'Test',
+      command: `${gradle} test`,
+      source: 'build.gradle',
+    });
+  }
+}
+
+/** Detect Ruby facts (Gemfile / Bundler). Mutates `facts`. */
+function detectRuby(root: string, facts: RepoFacts): void {
+  const gemfile = readText(join(root, 'Gemfile'));
+  if (gemfile === undefined) return;
+  facts.languages.push('Ruby');
+  if (/['"]rails['"]/.test(gemfile)) facts.frameworks.push('Rails');
+  if (/['"]sinatra['"]/.test(gemfile)) facts.frameworks.push('Sinatra');
+
+  const seen = new Set(facts.commands.map((c) => c.command));
+  pushCommand(facts.commands, seen, {
+    label: 'Install',
+    command: 'bundle install',
+    source: 'Gemfile',
+  });
+  if (/['"]rspec['"]/.test(gemfile) || isDir(join(root, 'spec'))) {
+    pushCommand(facts.commands, seen, {
+      label: 'Test',
+      command: 'bundle exec rspec',
+      source: 'rspec',
+    });
+  } else if (/['"]rake['"]/.test(gemfile) || existsSync(join(root, 'Rakefile'))) {
+    pushCommand(facts.commands, seen, { label: 'Test', command: 'bundle exec rake test', source: 'Rakefile' });
+  }
+}
+
+/** Detect PHP facts (composer.json). Mutates `facts`. */
+function detectPhp(root: string, facts: RepoFacts): void {
+  const composer = readJson(join(root, 'composer.json'));
+  if (!composer) return;
+  facts.languages.push('PHP');
+  facts.name ??= asString(composer.name);
+  facts.description ??= asString(composer.description);
+  const lic = composer.license;
+  if (typeof lic === 'string') facts.license ??= asString(lic);
+
+  const require = {
+    ...(composer.require as Record<string, unknown> | undefined),
+    ...(composer['require-dev'] as Record<string, unknown> | undefined),
+  };
+  if ('laravel/framework' in require) facts.frameworks.push('Laravel');
+  if (Object.keys(require).some((k) => k.startsWith('symfony/'))) facts.frameworks.push('Symfony');
+
+  const seen = new Set(facts.commands.map((c) => c.command));
+  pushCommand(facts.commands, seen, {
+    label: 'Install',
+    command: 'composer install',
+    source: 'composer.json',
+  });
+  const scripts = composer.scripts as Record<string, unknown> | undefined;
+  if ((scripts && asString(scripts.test)) || 'phpunit/phpunit' in require) {
+    pushCommand(facts.commands, seen, {
+      label: 'Test',
+      command: scripts && asString(scripts.test) ? 'composer test' : 'vendor/bin/phpunit',
+      source: scripts && asString(scripts.test) ? 'composer.json scripts.test' : 'phpunit',
+    });
+  }
+}
+
+/** Detect .NET facts (*.csproj / *.sln). Mutates `facts`. */
+function detectDotnet(root: string, facts: RepoFacts): void {
+  let hasProject = existsSync(join(root, 'global.json'));
+  let projectName: string | undefined;
+  try {
+    for (const entry of readdirSync(root)) {
+      if (/\.(csproj|fsproj|sln)$/i.test(entry)) {
+        hasProject = true;
+        if (!projectName && /\.(csproj|fsproj)$/i.test(entry)) {
+          projectName = entry.replace(/\.(csproj|fsproj)$/i, '');
+        }
+      }
+    }
+  } catch {
+    /* unreadable directory: treated as no .NET project */
+  }
+  if (!hasProject) return;
+  facts.languages.push('C#');
+  if (projectName) facts.name ??= projectName;
+
+  const seen = new Set(facts.commands.map((c) => c.command));
+  pushCommand(facts.commands, seen, { label: 'Install', command: 'dotnet restore', source: '.NET SDK' });
+  pushCommand(facts.commands, seen, { label: 'Build', command: 'dotnet build', source: '.NET SDK' });
+  pushCommand(facts.commands, seen, { label: 'Test', command: 'dotnet test', source: '.NET SDK' });
+}
+
 /** Resolve a license from a LICENSE file when not declared in metadata. */
 function detectLicenseFile(root: string, facts: RepoFacts): void {
   if (facts.license) return;
@@ -383,6 +529,10 @@ export function detectRepo(targetPath: string): RepoFacts {
   detectPython(root, facts);
   detectGo(root, facts);
   detectRust(root, facts);
+  detectJvm(root, facts);
+  detectRuby(root, facts);
+  detectPhp(root, facts);
+  detectDotnet(root, facts);
 
   // Fallbacks shared across ecosystems.
   facts.name ??= basename(root);

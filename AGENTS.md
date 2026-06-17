@@ -1,10 +1,10 @@
-# AGENTS.md — @bitmapasset/agents-md
+# AGENTS.md — agentsmd
 
-Guidance for AI coding agents (Cursor, Claude Code, Copilot, and others) working in this repository. Treat it as the source of truth for how to build, test, and contribute here.
+Guidance for AI coding agents (Cursor, Claude Code, Copilot, OpenClaw, Hermes, Codex, and others) working in this repository. Treat it as the source of truth for how to build, test, and contribute here.
 
 ## Project overview
 
-Scan a repository and generate a high-quality AGENTS.md file that tells AI coding agents how to work in your project. A README, but for AI agents.
+One scan, every agent's instruction file. Generate AGENTS.md, CLAUDE.md, Cursor rules, Copilot, Gemini, and Windsurf instruction files from a single deterministic repository scan.
 
 - **Language:** TypeScript, JavaScript
 - **Package manager:** npm

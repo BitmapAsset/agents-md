@@ -1,16 +1,18 @@
 {
   "name": "agentsmd",
-  "version": "0.1.0",
-  "description": "Scan a repository and generate a high-quality AGENTS.md file that tells AI coding agents how to work in your project. A README, but for AI agents.",
+  "version": "0.2.0",
+  "description": "One scan, every agent's instruction file. Generate AGENTS.md, CLAUDE.md, Cursor rules, Copilot, Gemini, and Windsurf instruction files from a single deterministic repository scan.",
   "keywords": [
     "ai-agents",
     "agents-md",
+    "claude-md",
     "cli",
     "codegen",
-    "llm",
     "cursor",
     "claude-code",
-    "copilot"
+    "copilot",
+    "gemini",
+    "windsurf"
   ],
   "homepage": "https://github.com/BitmapAsset/agents-md#readme",
   "bugs": {

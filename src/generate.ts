@@ -136,19 +136,28 @@ function renderDoDont(facts: RepoFacts): string {
   return `**Do**\n\n${doLines}\n\n**Don't**\n\n${dontLines}`;
 }
 
+/** Options that let each agent format customize the document shell. */
+export interface RenderOptions {
+  /** Level-1 heading, including the leading `# `. */
+  title: string;
+  /** Intro paragraph placed under the title. */
+  intro: string;
+}
+
+const DEFAULT_INTRO =
+  'Guidance for AI coding agents (Cursor, Claude Code, Copilot, OpenClaw, Hermes, Codex, and others) working in this repository. ' +
+  'Treat it as the source of truth for how to build, test, and contribute here.';
+
 /**
- * Render a complete AGENTS.md document from detected facts.
- * Only sections backed by real data are included.
+ * Render the shared instruction-document body (the sections common to every
+ * agent format) from detected facts. Only sections backed by real data are
+ * included, so the output never contains fabricated information.
  */
-export function generateAgentsMd(facts: RepoFacts): string {
-  const title = facts.name ?? 'Project';
+export function renderDocument(facts: RepoFacts, options: RenderOptions): string {
   const parts: string[] = [];
 
-  parts.push(`# AGENTS.md — ${title}\n`);
-  parts.push(
-    'Guidance for AI coding agents (Cursor, Claude Code, Copilot, OpenClaw, Hermes, Codex, and others) working in this repository. ' +
-      'Treat it as the source of truth for how to build, test, and contribute here.\n',
-  );
+  parts.push(`${options.title}\n`);
+  parts.push(`${options.intro}\n`);
 
   parts.push(section('Project overview', renderOverview(facts)));
 
@@ -176,3 +185,17 @@ export function generateAgentsMd(facts: RepoFacts): string {
 
   return parts.join('\n');
 }
+
+/**
+ * Render a complete AGENTS.md document from detected facts.
+ * Only sections backed by real data are included.
+ */
+export function generateAgentsMd(facts: RepoFacts): string {
+  const name = facts.name ?? 'Project';
+  return renderDocument(facts, {
+    title: `# AGENTS.md — ${name}`,
+    intro: DEFAULT_INTRO,
+  });
+}
+
+export { DEFAULT_INTRO };
