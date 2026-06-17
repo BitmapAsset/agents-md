@@ -1,0 +1,54 @@
+{
+  "name": "@bitmapasset/agents-md",
+  "version": "0.1.0",
+  "description": "Scan a repository and generate a high-quality AGENTS.md file that tells AI coding agents how to work in your project. A README, but for AI agents.",
+  "keywords": [
+    "ai-agents",
+    "agents-md",
+    "cli",
+    "codegen",
+    "llm",
+    "cursor",
+    "claude-code",
+    "copilot"
+  ],
+  "homepage": "https://github.com/BitmapAsset/agents-md#readme",
+  "bugs": {
+    "url": "https://github.com/BitmapAsset/agents-md/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BitmapAsset/agents-md.git"
+  },
+  "license": "MIT",
+  "author": "Gravity (BitmapAsset)",
+  "type": "module",
+  "bin": {
+    "agents-md": "dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepublishOnly": "npm run build",
+    "test": "node --test test/*.test.js",
+    "pretest": "npm run build",
+    "lint": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.4.0"
+  }
+}
