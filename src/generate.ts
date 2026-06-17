@@ -146,7 +146,7 @@ export function generateAgentsMd(facts: RepoFacts): string {
 
   parts.push(`# AGENTS.md — ${title}\n`);
   parts.push(
-    'Guidance for AI coding agents (Cursor, Claude Code, Copilot, and others) working in this repository. ' +
+    'Guidance for AI coding agents (Cursor, Claude Code, Copilot, OpenClaw, Hermes, Codex, and others) working in this repository. ' +
       'Treat it as the source of truth for how to build, test, and contribute here.\n',
   );
 

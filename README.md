@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Node >= 18](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](https://nodejs.org)
 
-`AGENTS.md` is an emerging convention for telling AI coding agents — Cursor, Claude Code, GitHub Copilot, OpenClaw, and others — how to build, test, and contribute in a repository. `agents-md` looks at your project and writes a clean, accurate first draft for you in seconds.
+`AGENTS.md` is an emerging convention for telling AI coding agents — Cursor, Claude Code, GitHub Copilot, OpenClaw, Hermes, Codex, and others — how to build, test, and contribute in a repository. `agents-md` looks at your project and writes a clean, accurate first draft for you in seconds.
 
 ## Why
 
@@ -18,30 +18,30 @@ Every AI agent that touches your codebase asks the same questions: What stack is
 No install required:
 
 ```bash
-npx @bitmapasset/agents-md
+npx agentsmd
 ```
 
 Or run it in any project directory:
 
 ```bash
 # Scan the current directory and write AGENTS.md
-npx @bitmapasset/agents-md
+npx agentsmd
 
 # Preview without writing a file
-npx @bitmapasset/agents-md --stdout
+npx agentsmd --stdout
 
 # Scan a specific path
-npx @bitmapasset/agents-md ./packages/api
+npx agentsmd ./packages/api
 ```
 
 Install it globally if you use it often:
 
 ```bash
-npm install -g @bitmapasset/agents-md
-agents-md --help
+npm install -g agentsmd
+agentsmd --help
 ```
 
-> The published package is `@bitmapasset/agents-md` (the unscoped `agents-md` name was already taken on npm). The command it installs is `agents-md`.
+> The npm package and installed command are both `agentsmd` (the hyphenated `agents-md` was already taken on npm). The GitHub repo is `BitmapAsset/agents-md`.
 
 ## Example
 
@@ -50,7 +50,7 @@ Running `agents-md` in a TypeScript project produces something like:
 ```markdown
 # AGENTS.md — sample-widget
 
-Guidance for AI coding agents (Cursor, Claude Code, Copilot, and others) working in
+Guidance for AI coding agents (Cursor, Claude Code, Copilot, OpenClaw, Hermes, Codex, and others) working in
 this repository. Treat it as the source of truth for how to build, test, and
 contribute here.
 
@@ -134,7 +134,7 @@ If `AGENTS.md` already exists and `--force` is not set, `agents-md` warns and ex
 There is no network access and no LLM call: it is fast, deterministic, and safe to run in CI. You can also use it as a library:
 
 ```js
-import { detectRepo, generateAgentsMd } from '@bitmapasset/agents-md';
+import { detectRepo, generateAgentsMd } from 'agentsmd';
 
 const facts = detectRepo(process.cwd());
 const markdown = generateAgentsMd(facts);

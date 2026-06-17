@@ -1,5 +1,5 @@
 {
-  "name": "@bitmapasset/agents-md",
+  "name": "agentsmd",
   "version": "0.1.0",
   "description": "Scan a repository and generate a high-quality AGENTS.md file that tells AI coding agents how to work in your project. A README, but for AI agents.",
   "keywords": [
@@ -24,7 +24,7 @@
   "author": "Gravity (BitmapAsset)",
   "type": "module",
   "bin": {
-    "agents-md": "dist/cli.js"
+    "agentsmd": "dist/cli.js"
   },
   "exports": {
     ".": {
