@@ -14,6 +14,7 @@ interface CliOptions {
   force: boolean;
   dryRun: boolean;
   check: boolean;
+  list: boolean;
   help: boolean;
   version: boolean;
 }
@@ -35,6 +36,7 @@ Options:
       --check           CI mode: exit non-zero if a target file is missing/empty
   -f, --force           Overwrite existing output files
       --dry-run         Show what would be written without writing it
+      --list            List every supported agent format and its file path
   -h, --help            Show this help message
   -v, --version         Show the version number
 
@@ -58,6 +60,7 @@ function parseArgs(argv: string[]): CliOptions {
     force: false,
     dryRun: false,
     check: false,
+    list: false,
     help: false,
     version: false,
   };
@@ -89,6 +92,9 @@ function parseArgs(argv: string[]): CliOptions {
         break;
       case '--check':
         opts.check = true;
+        break;
+      case '--list':
+        opts.list = true;
         break;
       case '-f':
       case '--force':
@@ -213,6 +219,12 @@ function main(argv: string[]): number {
     process.stdout.write(`${readVersion()}\n`);
     return 0;
   }
+  if (opts.list) {
+    for (const fmt of FORMATS) {
+      process.stdout.write(`${fmt.id.padEnd(9)} ${fmt.path.padEnd(34)} ${fmt.label}\n`);
+    }
+    return 0;
+  }
 
   const targetPath = resolve(opts.target);
   if (!existsSync(targetPath)) {
@@ -244,7 +256,8 @@ function main(argv: string[]): number {
     process.stderr.write(
       `Warning: no recognizable project signals found in ${targetPath}.\n` +
         'Looked for package.json, pyproject.toml, go.mod, Cargo.toml, pom.xml, ' +
-        'build.gradle, Gemfile, composer.json, *.csproj, and common directories.\n',
+        'build.gradle, Gemfile, composer.json, *.csproj, deno.json, mix.exs, ' +
+        'Package.swift, and common directories.\n',
     );
     return 1;
   }

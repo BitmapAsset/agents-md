@@ -1,7 +1,7 @@
 {
   "name": "mkagents",
-  "version": "0.2.0",
-  "description": "One scan, every agent's instruction file. Generate AGENTS.md, CLAUDE.md, Cursor rules, Copilot, Gemini, and Windsurf instruction files from a single deterministic repository scan.",
+  "version": "0.3.0",
+  "description": "One scan, every agent's instruction file. Generate AGENTS.md, CLAUDE.md, Cursor, Copilot, Gemini, Windsurf, Aider, Cline, Roo, Zed, Warp, Goose, and Junie instruction files from a single deterministic repository scan — no API key, no LLM.",
   "keywords": [
     "mkagents",
     "ai-agents",

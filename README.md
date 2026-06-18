@@ -1,6 +1,6 @@
 # mkagents
 
-> One scan, every agent's instruction file. Scan a repo and generate a high-quality instruction file — `AGENTS.md`, `CLAUDE.md`, Cursor rules, Copilot, Gemini, Windsurf — that tells AI coding agents how to work in your project.
+> One scan, every agent's instruction file. Scan a repo and generate a high-quality instruction file — `AGENTS.md`, `CLAUDE.md`, Cursor, Copilot, Gemini, Windsurf, Aider, Cline, Roo, Zed, Warp, Goose, Junie — that tells AI coding agents how to build, test, and work in your project. No API key, no LLM, fully deterministic.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Node >= 18](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](https://nodejs.org)
@@ -9,7 +9,7 @@
 
 ## Why mkagents
 
-- **One tool, every agent format.** From a single scan, emit `AGENTS.md`, `CLAUDE.md`, Cursor `.mdc` rules, Copilot, Gemini, and Windsurf — all from the same detected facts, so they never drift apart.
+- **One tool, every agent format.** From a single scan, emit 13 formats — `AGENTS.md`, `CLAUDE.md`, Cursor `.mdc` rules, Copilot, Gemini, Windsurf, Aider, Cline, Roo, Zed, Warp, Goose, and JetBrains Junie — all from the same detected facts, so they never drift apart.
 - **Deterministic.** Same repo in, same files out. No randomness, no surprises in code review.
 - **No API key, no network, no LLM.** It reads the signals already in your repo and renders Markdown. Nothing leaves your machine.
 - **CI-friendly.** `--check` fails the build when an instruction file is missing or empty, so you can enforce it.
@@ -65,6 +65,15 @@ Different agents read different files. `mkagents` detects your project once and 
 | `copilot`  | GitHub Copilot      | `.github/copilot-instructions.md`   |
 | `gemini`   | Gemini CLI          | `GEMINI.md`                         |
 | `windsurf` | Windsurf            | `.windsurfrules`                    |
+| `aider`    | Aider               | `CONVENTIONS.md`                    |
+| `cline`    | Cline               | `.clinerules`                       |
+| `roo`      | Roo Code            | `.roorules`                         |
+| `zed`      | Zed                 | `.rules`                            |
+| `warp`     | Warp                | `WARP.md`                           |
+| `goose`    | Goose               | `.goosehints`                       |
+| `junie`    | JetBrains Junie     | `.junie/guidelines.md`              |
+
+Run `mkagents --list` to print this table from your installed version.
 
 The default (no flag) writes only `AGENTS.md`. Each file is written in the path and shape its tool expects — for example, Cursor gets a `.mdc` file with the recommended YAML frontmatter (the older single-file `.cursorrules` still works, but `.cursor/rules/*.mdc` is the current convention). Existing files are never overwritten without `--force`.
 
@@ -140,6 +149,7 @@ It is a first draft, not a final answer: review it and add project-specific cont
 | `--check`           | CI mode: exit non-zero if a target file is missing or empty       | off         |
 | `-f, --force`       | Overwrite existing output files                                   | off         |
 | `--dry-run`         | Show what would be written without writing it                     | off         |
+| `--list`            | List every supported agent format and its file path              | —           |
 | `-h, --help`        | Show help                                                         | —           |
 | `-v, --version`     | Show the version                                                  | —           |
 
@@ -161,9 +171,9 @@ npx mkagents --check --format agents,claude,cursor
 
 | Area              | Sources                                                                                          |
 | ----------------- | ------------------------------------------------------------------------------------------------ |
-| Language / stack  | `package.json` + `tsconfig.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `pom.xml`, `build.gradle(.kts)`, `Gemfile`, `composer.json`, `*.csproj` |
+| Language / stack  | `package.json` + `tsconfig.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `pom.xml`, `build.gradle(.kts)`, `Gemfile`, `composer.json`, `*.csproj`, `deno.json`, `mix.exs`, `Package.swift` |
 | Package manager   | `package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`, `bun.lockb`                                   |
-| Commands          | `package.json` scripts, plus ecosystem defaults (pytest, go, cargo, mvn/gradle, bundler, composer, dotnet) |
+| Commands          | `package.json` scripts, plus ecosystem defaults (pytest, go, cargo, mvn/gradle, bundler, composer, dotnet, deno, mix, swift) |
 | Frameworks        | Dependency names (Next.js, Remix, SvelteKit, Nuxt, NestJS, Vite, React, Vue, FastAPI, Django, Rails, Laravel, Symfony, and more) |
 | Monorepo          | `workspaces` field and `pnpm-workspace.yaml`                                                      |
 | Structure         | Common directories (`src`, `test`, `docs`, `packages`, …)                                         |

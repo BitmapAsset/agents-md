@@ -109,6 +109,76 @@ export const FORMATS: AgentFormat[] = [
         intro: DEFAULT_INTRO,
       }),
   },
+  {
+    id: 'aider',
+    label: 'Aider (CONVENTIONS.md)',
+    path: 'CONVENTIONS.md',
+    render: (facts) =>
+      renderDocument(facts, {
+        title: `# Conventions — ${projectName(facts)}`,
+        intro: DEFAULT_INTRO,
+      }),
+  },
+  {
+    id: 'cline',
+    label: 'Cline (.clinerules)',
+    path: '.clinerules',
+    render: (facts) =>
+      renderDocument(facts, {
+        title: `# ${projectName(facts)} — agent rules`,
+        intro: DEFAULT_INTRO,
+      }),
+  },
+  {
+    id: 'roo',
+    label: 'Roo Code (.roorules)',
+    path: '.roorules',
+    render: (facts) =>
+      renderDocument(facts, {
+        title: `# ${projectName(facts)} — agent rules`,
+        intro: DEFAULT_INTRO,
+      }),
+  },
+  {
+    id: 'zed',
+    label: 'Zed (.rules)',
+    path: '.rules',
+    render: (facts) =>
+      renderDocument(facts, {
+        title: `# ${projectName(facts)} — agent rules`,
+        intro: DEFAULT_INTRO,
+      }),
+  },
+  {
+    id: 'warp',
+    label: 'Warp (WARP.md)',
+    path: 'WARP.md',
+    render: (facts) =>
+      renderDocument(facts, {
+        title: `# WARP.md — ${projectName(facts)}`,
+        intro: DEFAULT_INTRO,
+      }),
+  },
+  {
+    id: 'goose',
+    label: 'Goose (.goosehints)',
+    path: '.goosehints',
+    render: (facts) =>
+      renderDocument(facts, {
+        title: `# ${projectName(facts)} — agent hints`,
+        intro: DEFAULT_INTRO,
+      }),
+  },
+  {
+    id: 'junie',
+    label: 'JetBrains Junie (.junie/guidelines.md)',
+    path: '.junie/guidelines.md',
+    render: (facts) =>
+      renderDocument(facts, {
+        title: `# Project guidelines — ${projectName(facts)}`,
+        intro: DEFAULT_INTRO,
+      }),
+  },
 ];
 
 /** Look up a format by its `id`, or return undefined when unknown. */

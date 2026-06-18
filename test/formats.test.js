@@ -25,6 +25,24 @@ test('each format declares the path its tool expects', () => {
   assert.equal(paths.windsurf, '.windsurfrules');
 });
 
+test('coverage extends to Aider, Cline, Roo, Zed, Warp, Goose, and Junie', () => {
+  const ids = formatIds();
+  for (const id of ['aider', 'cline', 'roo', 'zed', 'warp', 'goose', 'junie']) {
+    assert.ok(ids.includes(id), `format ${id} should be registered`);
+  }
+  const paths = Object.fromEntries(FORMATS.map((f) => [f.id, f.path]));
+  assert.equal(paths.aider, 'CONVENTIONS.md');
+  assert.equal(paths.cline, '.clinerules');
+  assert.equal(paths.roo, '.roorules');
+  assert.equal(paths.zed, '.rules');
+  assert.equal(paths.warp, 'WARP.md');
+  assert.equal(paths.goose, '.goosehints');
+  assert.equal(paths.junie, '.junie/guidelines.md');
+  // No two formats may collide on the same output path.
+  const allPaths = FORMATS.map((f) => f.path);
+  assert.equal(new Set(allPaths).size, allPaths.length, 'format paths must be unique');
+});
+
 test('every format renders from the same detected facts with a distinct title', () => {
   const facts = detectRepo(fixture);
   const titles = new Set();

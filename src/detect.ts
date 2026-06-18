@@ -485,6 +485,59 @@ function detectDotnet(root: string, facts: RepoFacts): void {
   pushCommand(facts.commands, seen, { label: 'Test', command: 'dotnet test', source: '.NET SDK' });
 }
 
+/** Detect Deno facts (deno.json / deno.jsonc). Mutates `facts`. */
+function detectDeno(root: string, facts: RepoFacts): void {
+  const config = readJson(join(root, 'deno.json'));
+  const hasDeno = config !== undefined || existsSync(join(root, 'deno.jsonc'));
+  if (!hasDeno) return;
+  // Deno is TypeScript-first; lead with TS, then mark the runtime.
+  if (!facts.languages.includes('TypeScript')) facts.languages.unshift('TypeScript');
+  facts.languages.push('Deno');
+  if (config) {
+    facts.name ??= asString(config.name);
+    facts.description ??= asString(config.description);
+  }
+  const seen = new Set(facts.commands.map((c) => c.command));
+  const tasks = config?.tasks as Record<string, unknown> | undefined;
+  if (tasks) {
+    if (asString(tasks.dev)) {
+      pushCommand(facts.commands, seen, { label: 'Develop', command: 'deno task dev', source: 'deno.json tasks.dev' });
+    }
+    if (asString(tasks.start)) {
+      pushCommand(facts.commands, seen, { label: 'Start', command: 'deno task start', source: 'deno.json tasks.start' });
+    }
+    if (asString(tasks.build)) {
+      pushCommand(facts.commands, seen, { label: 'Build', command: 'deno task build', source: 'deno.json tasks.build' });
+    }
+  }
+  pushCommand(facts.commands, seen, { label: 'Test', command: 'deno test', source: 'Deno' });
+}
+
+/** Detect Elixir facts (mix.exs). Mutates `facts`. */
+function detectElixir(root: string, facts: RepoFacts): void {
+  const mix = readText(join(root, 'mix.exs'));
+  if (mix === undefined) return;
+  facts.languages.push('Elixir');
+  const app = mix.match(/app:\s*:([a-zA-Z0-9_]+)/);
+  if (app && app[1]) facts.name ??= app[1];
+  if (/phoenix/i.test(mix)) facts.frameworks.push('Phoenix');
+  const seen = new Set(facts.commands.map((c) => c.command));
+  pushCommand(facts.commands, seen, { label: 'Install', command: 'mix deps.get', source: 'mix.exs' });
+  pushCommand(facts.commands, seen, { label: 'Test', command: 'mix test', source: 'mix.exs' });
+}
+
+/** Detect Swift package facts (Package.swift). Mutates `facts`. */
+function detectSwift(root: string, facts: RepoFacts): void {
+  const manifest = readText(join(root, 'Package.swift'));
+  if (manifest === undefined) return;
+  facts.languages.push('Swift');
+  const name = manifest.match(/name:\s*"([^"]+)"/);
+  if (name && name[1]) facts.name ??= name[1];
+  const seen = new Set(facts.commands.map((c) => c.command));
+  pushCommand(facts.commands, seen, { label: 'Build', command: 'swift build', source: 'Package.swift' });
+  pushCommand(facts.commands, seen, { label: 'Test', command: 'swift test', source: 'Package.swift' });
+}
+
 /** Resolve a license from a LICENSE file when not declared in metadata. */
 function detectLicenseFile(root: string, facts: RepoFacts): void {
   if (facts.license) return;
@@ -533,6 +586,9 @@ export function detectRepo(targetPath: string): RepoFacts {
   detectRuby(root, facts);
   detectPhp(root, facts);
   detectDotnet(root, facts);
+  detectDeno(root, facts);
+  detectElixir(root, facts);
+  detectSwift(root, facts);
 
   // Fallbacks shared across ecosystems.
   facts.name ??= basename(root);

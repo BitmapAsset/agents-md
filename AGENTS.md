@@ -4,7 +4,7 @@ Guidance for AI coding agents (Cursor, Claude Code, Copilot, OpenClaw, Hermes, C
 
 ## Project overview
 
-One scan, every agent's instruction file. Generate AGENTS.md, CLAUDE.md, Cursor rules, Copilot, Gemini, and Windsurf instruction files from a single deterministic repository scan.
+One scan, every agent's instruction file. Generate AGENTS.md, CLAUDE.md, Cursor, Copilot, Gemini, Windsurf, Aider, Cline, Roo, Zed, Warp, Goose, and Junie instruction files from a single deterministic repository scan — no API key, no LLM.
 
 - **Language:** TypeScript, JavaScript
 - **Package manager:** npm
