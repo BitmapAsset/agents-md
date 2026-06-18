@@ -1,13 +1,13 @@
-# agents-md
+# mkagents
 
 > One scan, every agent's instruction file. Scan a repo and generate a high-quality instruction file — `AGENTS.md`, `CLAUDE.md`, Cursor rules, Copilot, Gemini, Windsurf — that tells AI coding agents how to work in your project.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Node >= 18](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](https://nodejs.org)
 
-`AGENTS.md` is an emerging open convention for telling AI coding agents — Cursor, Claude Code, GitHub Copilot, OpenClaw, Hermes, Codex, and others — how to build, test, and contribute in a repository. But every tool also reads its own file. `agents-md` looks at your project once and writes a clean, accurate instruction file for **every** agent format in seconds.
+`AGENTS.md` is an emerging open convention for telling AI coding agents — Cursor, Claude Code, GitHub Copilot, OpenClaw, Hermes, Codex, and others — how to build, test, and contribute in a repository. But every tool also reads its own file. `mkagents` looks at your project once and writes a clean, accurate instruction file for **every** agent format in seconds.
 
-## Why agents-md
+## Why mkagents
 
 - **One tool, every agent format.** From a single scan, emit `AGENTS.md`, `CLAUDE.md`, Cursor `.mdc` rules, Copilot, Gemini, and Windsurf — all from the same detected facts, so they never drift apart.
 - **Deterministic.** Same repo in, same files out. No randomness, no surprises in code review.
@@ -15,47 +15,47 @@
 - **CI-friendly.** `--check` fails the build when an instruction file is missing or empty, so you can enforce it.
 - **Honest by construction.** It only writes sections it has real data for — it never invents commands or makes up a stack.
 
-Every AI agent that touches your codebase asks the same questions: What stack is this? How do I install it? How do I run the tests? What conventions should I follow? Today that context is scattered across the README, CI config, and the maintainers' heads — so agents guess, and guess wrong. `agents-md` reads `package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `pom.xml`, `build.gradle`, `Gemfile`, `composer.json`, `*.csproj`, lockfiles, scripts, and directory layout, then produces a structured instruction file grounded in those facts.
+Every AI agent that touches your codebase asks the same questions: What stack is this? How do I install it? How do I run the tests? What conventions should I follow? Today that context is scattered across the README, CI config, and the maintainers' heads — so agents guess, and guess wrong. `mkagents` reads `package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `pom.xml`, `build.gradle`, `Gemfile`, `composer.json`, `*.csproj`, lockfiles, scripts, and directory layout, then produces a structured instruction file grounded in those facts.
 
 ## Quick start
 
 No install required:
 
 ```bash
-npx agentsmd
+npx mkagents
 ```
 
 Or run it in any project directory:
 
 ```bash
 # Scan the current directory and write AGENTS.md
-npx agentsmd
+npx mkagents
 
 # Emit an instruction file for EVERY agent format at once
-npx agentsmd --all
+npx mkagents --all
 
 # Emit a specific subset
-npx agentsmd --format claude,cursor
+npx mkagents --format claude,cursor
 
 # Preview without writing a file
-npx agentsmd --stdout
+npx mkagents --stdout
 
 # Scan a specific path
-npx agentsmd ./packages/api
+npx mkagents ./packages/api
 ```
 
 Install it globally if you use it often:
 
 ```bash
-npm install -g agentsmd
-agentsmd --help
+npm install -g mkagents
+mkagents --help
 ```
 
-> The npm package and installed command are both `agentsmd` (the hyphenated `agents-md` was already taken on npm). The GitHub repo is `BitmapAsset/agents-md`.
+> The npm package and the installed command are both `mkagents` — think "make agents", in the spirit of `mkdir`. It writes the standard `AGENTS.md` plus every other agent instruction file. The GitHub repo is `BitmapAsset/mkagents`.
 
 ## Multi-format export
 
-Different agents read different files. `agents-md` detects your project once and renders the same grounded facts into whichever formats you ask for. Use `--all`, or pick a subset with `--format <comma-list>`:
+Different agents read different files. `mkagents` detects your project once and renders the same grounded facts into whichever formats you ask for. Use `--all`, or pick a subset with `--format <comma-list>`:
 
 | Format id  | Tool                | Written to                          |
 | ---------- | ------------------- | ----------------------------------- |
@@ -70,12 +70,12 @@ The default (no flag) writes only `AGENTS.md`. Each file is written in the path 
 
 ```bash
 # Generate every format, overwriting anything stale
-npx agentsmd --all --force
+npx mkagents --all --force
 ```
 
 ## Example
 
-Running `agents-md` in a TypeScript project produces something like:
+Running `mkagents` in a TypeScript project produces something like:
 
 ```markdown
 # AGENTS.md — sample-widget
@@ -143,7 +143,7 @@ It is a first draft, not a final answer: review it and add project-specific cont
 | `-h, --help`        | Show help                                                         | —           |
 | `-v, --version`     | Show the version                                                  | —           |
 
-If a target file already exists and `--force` is not set, `agents-md` skips it and exits non-zero, so nothing is clobbered.
+If a target file already exists and `--force` is not set, `mkagents` skips it and exits non-zero, so nothing is clobbered.
 
 ## Enforce it in CI
 
@@ -151,10 +151,10 @@ If a target file already exists and `--force` is not set, `agents-md` skips it a
 
 ```bash
 # Fail the build if AGENTS.md is missing or empty
-npx agentsmd --check
+npx mkagents --check
 
 # Enforce multiple formats
-npx agentsmd --check --format agents,claude,cursor
+npx mkagents --check --format agents,claude,cursor
 ```
 
 ## What it detects
@@ -173,7 +173,7 @@ Detection is deliberately conservative: a fact is only emitted when the signal i
 
 ## How it works
 
-`agents-md` runs in two read-only passes:
+`mkagents` runs in two read-only passes:
 
 1. **Detect** — walk the target directory's manifests and well-known files to build a `RepoFacts` object. This pass never writes or mutates anything on disk.
 2. **Generate** — render `RepoFacts` into Markdown, emitting only the sections that have backing data.
@@ -181,7 +181,7 @@ Detection is deliberately conservative: a fact is only emitted when the signal i
 There is no network access and no LLM call: it is fast, deterministic, and safe to run in CI. You can also use it as a library:
 
 ```js
-import { detectRepo, generateAgentsMd, FORMATS } from 'agentsmd';
+import { detectRepo, generateAgentsMd, FORMATS } from 'mkagents';
 
 const facts = detectRepo(process.cwd());
 
@@ -199,8 +199,8 @@ for (const fmt of FORMATS) {
 Issues and pull requests are welcome.
 
 ```bash
-git clone https://github.com/BitmapAsset/agents-md.git
-cd agents-md
+git clone https://github.com/BitmapAsset/mkagents.git
+cd mkagents
 npm install
 npm run build
 npm test

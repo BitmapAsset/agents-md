@@ -1,9 +1,11 @@
 {
-  "name": "agentsmd",
+  "name": "mkagents",
   "version": "0.2.0",
   "description": "One scan, every agent's instruction file. Generate AGENTS.md, CLAUDE.md, Cursor rules, Copilot, Gemini, and Windsurf instruction files from a single deterministic repository scan.",
   "keywords": [
+    "mkagents",
     "ai-agents",
+    "agents.md",
     "agents-md",
     "claude-md",
     "cli",
@@ -14,19 +16,19 @@
     "gemini",
     "windsurf"
   ],
-  "homepage": "https://github.com/BitmapAsset/agents-md#readme",
+  "homepage": "https://github.com/BitmapAsset/mkagents#readme",
   "bugs": {
-    "url": "https://github.com/BitmapAsset/agents-md/issues"
+    "url": "https://github.com/BitmapAsset/mkagents/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BitmapAsset/agents-md.git"
+    "url": "git+https://github.com/BitmapAsset/mkagents.git"
   },
   "license": "MIT",
   "author": "Gravity (BitmapAsset)",
   "type": "module",
   "bin": {
-    "agentsmd": "dist/cli.js"
+    "mkagents": "dist/cli.js"
   },
   "exports": {
     ".": {

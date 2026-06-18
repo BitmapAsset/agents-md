@@ -1,7 +1,7 @@
 /**
  * The multi-format export registry.
  *
- * From a single repository scan (one `RepoFacts` object) agents-md can emit the
+ * From a single repository scan (one `RepoFacts` object) mkagents can emit the
  * instruction file in every major AI-agent format. Each entry below knows the
  * path/filename the target tool expects and how to render the document for it.
  * The body is shared across formats via `renderDocument`; only the title,

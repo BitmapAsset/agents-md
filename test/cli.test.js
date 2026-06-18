@@ -20,7 +20,7 @@ let work;
 
 /** Build a minimal but realistic Node/TS project in a temp directory. */
 before(() => {
-  work = mkdtempSync(join(tmpdir(), 'agentsmd-cli-'));
+  work = mkdtempSync(join(tmpdir(), 'mkagents-cli-'));
   writeFileSync(
     join(work, 'package.json'),
     JSON.stringify(
@@ -74,7 +74,7 @@ test('--all writes every agent format to its expected path', () => {
 });
 
 test('--format selects a subset', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'agentsmd-subset-'));
+  const dir = mkdtempSync(join(tmpdir(), 'mkagents-subset-'));
   writeFileSync(join(dir, 'go.mod'), 'module example.com/app\n\ngo 1.22\n');
   const r = run(['.', '--format', 'gemini,windsurf'], dir);
   assert.equal(r.status, 0, r.stderr);
@@ -98,7 +98,7 @@ test('--check passes when the target file exists and is non-empty', () => {
 });
 
 test('--check fails when the target file is missing', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'agentsmd-check-'));
+  const dir = mkdtempSync(join(tmpdir(), 'mkagents-check-'));
   const r = run(['.', '--check', '--format', 'claude'], dir);
   assert.equal(r.status, 1);
   assert.match(r.stderr, /Check failed/);
@@ -106,7 +106,7 @@ test('--check fails when the target file is missing', () => {
 });
 
 test('--check fails when the target file is empty', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'agentsmd-empty-'));
+  const dir = mkdtempSync(join(tmpdir(), 'mkagents-empty-'));
   writeFileSync(join(dir, 'AGENTS.md'), '   \n');
   const r = run(['.', '--check'], dir);
   assert.equal(r.status, 1);
@@ -127,7 +127,7 @@ test('--output cannot combine with multiple formats', () => {
 });
 
 test('--stdout prints without writing', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'agentsmd-stdout-'));
+  const dir = mkdtempSync(join(tmpdir(), 'mkagents-stdout-'));
   writeFileSync(join(dir, 'Cargo.toml'), '[package]\nname = "demo"\n');
   const r = run(['.', '--stdout', '--format', 'claude'], dir);
   assert.equal(r.status, 0, r.stderr);

@@ -18,10 +18,10 @@ interface CliOptions {
   version: boolean;
 }
 
-const HELP = `agentsmd — one scan, every agent's instruction file
+const HELP = `mkagents — one scan, every agent's instruction file
 
 Usage:
-  agentsmd [path] [options]
+  mkagents [path] [options]
 
 Arguments:
   path                  Directory to scan (default: current directory)
@@ -42,12 +42,12 @@ Formats:
 ${FORMATS.map((f) => `  ${f.id.padEnd(9)} ${f.label} -> ${f.path}`).join('\n')}
 
 Examples:
-  agentsmd                            Write AGENTS.md for the current directory
-  agentsmd --all                      Emit every agent's instruction file
-  agentsmd --format claude,cursor     Emit CLAUDE.md and Cursor rules
-  agentsmd --stdout                   Preview AGENTS.md without writing
-  agentsmd --check --format claude    Fail CI if CLAUDE.md is missing or empty
-  agentsmd -o docs/AGENTS.md          Write AGENTS.md to a custom location`;
+  mkagents                            Write AGENTS.md for the current directory
+  mkagents --all                      Emit every agent's instruction file
+  mkagents --format claude,cursor     Emit CLAUDE.md and Cursor rules
+  mkagents --stdout                   Preview AGENTS.md without writing
+  mkagents --check --format claude    Fail CI if CLAUDE.md is missing or empty
+  mkagents -o docs/AGENTS.md          Write AGENTS.md to a custom location`;
 
 function parseArgs(argv: string[]): CliOptions {
   const opts: CliOptions = {
@@ -186,7 +186,7 @@ function runCheck(root: string, formats: AgentFormat[]): number {
   if (missing.length > 0) {
     process.stderr.write(
       `Check failed: missing or empty instruction file(s): ${missing.join(', ')}.\n` +
-        'Run agentsmd to generate them.\n',
+        'Run mkagents to generate them.\n',
     );
     return 1;
   }

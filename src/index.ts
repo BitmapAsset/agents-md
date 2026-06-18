@@ -1,14 +1,14 @@
 /**
- * Public programmatic API for agents-md.
+ * Public programmatic API for mkagents.
  *
  * @example
- * import { detectRepo, generateAgentsMd } from 'agentsmd';
+ * import { detectRepo, generateAgentsMd } from 'mkagents';
  *
  * const facts = detectRepo(process.cwd());
  * const markdown = generateAgentsMd(facts);
  *
  * @example Emit every supported agent format from one scan.
- * import { detectRepo, FORMATS } from 'agentsmd';
+ * import { detectRepo, FORMATS } from 'mkagents';
  *
  * const facts = detectRepo(process.cwd());
  * for (const fmt of FORMATS) {
